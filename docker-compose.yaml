@@ -1,0 +1,20 @@
+version: "3"
+networks:
+  service:
+    driver: bridge
+
+volumes:
+  db-storage:
+    driver: local
+services:
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: messenger-db
+    volumes:
+      - db-storage:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - service
+

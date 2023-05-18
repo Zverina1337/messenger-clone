@@ -78,6 +78,7 @@ export default function AuthForm() {
                             label="Name"
                             register={register}
                             errors={errors}
+                            disabled={isLoading}
                         />
                     }
                     <Input
@@ -85,12 +86,14 @@ export default function AuthForm() {
                         label="Email"
                         register={register}
                         errors={errors}
+                        disabled={isLoading}
                     />
                     <Input
                         id="password"
                         label="Password"
                         register={register}
                         errors={errors}
+                        disabled={isLoading}
                     />
                     <Button
                         type={"submit"}
