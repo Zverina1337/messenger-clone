@@ -6,6 +6,10 @@ import Input from "@/app/components/inputs/Input";
 import Button from "@/app/components/Button";
 import AuthSocialButton from "@/app/(site)/components/AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import requestManager from "@/app/fetcher";
+import { ToasterContext } from '../../context/ToasterContext';
+import { toast } from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 type Variant = "LOGIN" | "REGISTER";
 
@@ -39,17 +43,37 @@ export default function AuthForm() {
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setIsLoading(true);
         if (variant === "REGISTER") {
-            // Fetch register
+            requestManager("api/register", "POST", data)
+            .catch(() => {
+                toast.error("Something went wrong!")
+            })
+            .finally(() => setIsLoading(false));
         }
         if (variant === "LOGIN") {
-            // NextAuth Sign In
+            signIn("credentials", {
+                ...data,
+                redirect: false
+            }).then((callback) => {
+                if(callback?.error) {
+                    toast.error("Invalid Credentials!")
+                } else if (callback?.ok) {
+                    toast.success("Logged In!")
+                }
+            }).finally(() => setIsLoading(false));
         }
     }
 
     const socialAction = (action: string) => {
         setIsLoading(true);
 
-        // NextAuth Social Sign In
+        signIn(action, { redirect: false})
+        .then((callback) => {
+            if(callback?.error) {
+                toast.error("Invalid Credentials!")
+            } else if (callback?.ok) {
+                toast.success("Logged In!")
+            }
+        }).finally(() => setIsLoading(false));
     }
     return (
         <div className="
@@ -59,6 +83,7 @@ export default function AuthForm() {
                 sm:max-w-md
             "
         >
+            <ToasterContext/>
             <div className="
                     bg-white
                     px-4
@@ -91,6 +116,7 @@ export default function AuthForm() {
                     <Input
                         id="password"
                         label="Password"
+                        type="password"
                         register={register}
                         errors={errors}
                         disabled={isLoading}
