@@ -33,3 +33,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# packages
+package-lock.json
+
+# yarn lock
+yarn.lock
+
+# for webstorm
+.idea
