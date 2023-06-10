@@ -1,22 +1,29 @@
 "use client";
 
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {FieldValues, SubmitHandler, useForm} from "react-hook-form";
 import Input from "@/app/components/inputs/Input";
 import Button from "@/app/components/Button";
 import AuthSocialButton from "@/app/(site)/components/AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import requestManager from "@/app/fetcher";
-import { ToasterContext } from '../../context/ToasterContext';
 import { toast } from "react-hot-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Variant = "LOGIN" | "REGISTER";
 
 export default function AuthForm() {
-
-    const [variant, setVariant] = useState<Variant>("LOGIN")
+    const session = useSession();
+    const router = useRouter();
+    const [variant, setVariant] = useState<Variant>("LOGIN");
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if(session?.status === "authenticated") {
+            router.push("/users");
+        } 
+    },[session?.status])
 
     const toggleVariant = useCallback(() => {
         if(variant === "LOGIN") {
@@ -44,6 +51,7 @@ export default function AuthForm() {
         setIsLoading(true);
         if (variant === "REGISTER") {
             requestManager("api/register", "POST", data)
+            .then(() => signIn("credentials", {...data, redirect: false}))
             .catch(() => {
                 toast.error("Something went wrong!")
             })
@@ -58,6 +66,7 @@ export default function AuthForm() {
                     toast.error("Invalid Credentials!")
                 } else if (callback?.ok) {
                     toast.success("Logged In!")
+                    router.push("/users");
                 }
             }).finally(() => setIsLoading(false));
         }
@@ -83,7 +92,6 @@ export default function AuthForm() {
                 sm:max-w-md
             "
         >
-            <ToasterContext/>
             <div className="
                     bg-white
                     px-4
