@@ -21,10 +21,9 @@ export const DesktopItem: React.FC<DesktopItemProps> = ({
 
     const handleClick = () => {
         if(onClick) {
-            return onClick;
+            return onClick();
         }
     }
-
     return (
         <li>
             <Link
