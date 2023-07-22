@@ -21,6 +21,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     const router = useRouter();
 
     const {conversationId, isOpen} = useConversation()
+
     return (
         <aside className={clsx(`
             fixed
