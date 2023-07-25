@@ -1,9 +1,9 @@
 import getConversationById from "@/app/actions/getConversationById";
 import getMessages from "@/app/actions/getMessages";
 import { EmptyState } from "@/app/components/EmptyState";
-import { Header } from "@/app/conversations/components/Header"
-import Body from "@/app/conversations/components/Body";
-import Form from "@/app/conversations/components/Form";
+import { Header } from "@/app/conversations/[conversationId]/components/Header"
+import Body from "@/app/conversations/[conversationId]/components/Body";
+import Form from "@/app/conversations/[conversationId]/components/Form";
 
 interface Params {
     conversationId: string;

@@ -1,6 +1,7 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import {NextResponse} from "next/server";
 import prisma from "@/app/libs/prismadb";
+import {pusherServer} from "@/app/libs/pusher";
 export async function POST(
     request: Request
 ) {
@@ -18,7 +19,7 @@ export async function POST(
             return new NextResponse('Unauthorized', { status: 401 })
         }
 
-        if (isGroup && (!members || members.length < 2 || name)) {
+        if (isGroup && (!members || members.length < 2 || !name)) {
             return new NextResponse('Invalid data', { status: 400 });
         }
 
@@ -33,13 +34,19 @@ export async function POST(
                                 id: member.value
                             })),
                             {
-                                id: currentUser
+                                id: currentUser?.id
                             }
                         ]
                     }
                 },
                 include: {
                     users: true
+                }
+            })
+
+            newConversation.users.forEach((user) => {
+                if(user.email) {
+                    pusherServer.trigger(user.email, "conversation:new", newConversation)
                 }
             })
 
@@ -87,9 +94,15 @@ export async function POST(
             }
         })
 
+        newConversation.users.map((user) => {
+            if (user.email) {
+                pusherServer.trigger(user.email, "conversation:new", newConversation);
+            }
+        })
+
         return NextResponse.json(newConversation);
 
     } catch (error: any){
-        return new NextResponse("Internal Server", { status: 500 })
+        return new NextResponse(error, { status: 500 })
     }
 }

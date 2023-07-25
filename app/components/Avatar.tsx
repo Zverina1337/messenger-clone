@@ -3,6 +3,7 @@
 import { User } from "@prisma/client";
 import Image from 'next/image';
 import { FaUserAlt } from "react-icons/fa";
+import useActiveList from "@/app/hooks/useActiveList";
 
 interface AvatarProps {
     user?: User;
@@ -11,6 +12,9 @@ interface AvatarProps {
 export const Avatar: React.FC<AvatarProps> = ({
     user
 }) => {
+    const { members } = useActiveList();
+    const isActive = members.indexOf(user?.email!) !== -1;
+
     return (
         <div className="relative">
             <div
@@ -39,8 +43,9 @@ export const Avatar: React.FC<AvatarProps> = ({
                 />
                 }
             </div>
-            <span
-                className="
+            { isActive && (
+                <span
+                    className="
                     absolute
                     block
                     bg-green-500
@@ -54,8 +59,9 @@ export const Avatar: React.FC<AvatarProps> = ({
                     md:w-3
                     rounded-full
                 "
-            >
+                >
             </span>
+            )}
         </div>
     ) 
 };

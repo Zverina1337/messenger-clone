@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import {useCallback, useState} from "react";
 import {Avatar} from "@/app/components/Avatar";
 import requestManager from "@/app/fetcher";
+import LoadingModal from "@/app/components/LoadingModal";
 
 interface UserBoxProps {
     user: User;
@@ -25,6 +26,10 @@ export const UserBox: React.FC<UserBoxProps> = ({user}) => {
     }, [user, router]);
 
     return (
+        <>
+        {isLoading && (
+            <LoadingModal />
+        )}
         <div
             onClick={handleClick}
             className="
@@ -61,5 +66,6 @@ export const UserBox: React.FC<UserBoxProps> = ({user}) => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
